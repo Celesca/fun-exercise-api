@@ -94,4 +94,38 @@ public class AccountService {
         }
         return new AccountResponse(account.getNo(), account.getType(), account.getName(), account.getBalance());
     }
+
+    @Transactional
+    public AccountResponse transferAccount(Integer accountNo,
+                                           Integer targetAccountNo,
+                                           TransferRequest transferRequest) {
+        Optional<Account> optionalAccount = accountRepository.findById(accountNo);
+        if (optionalAccount.isEmpty()) {
+            throw new NotFoundException("Account not found");
+        }
+
+        Optional<Account> optionalTargetAccount = accountRepository.findById(targetAccountNo);
+        if (optionalTargetAccount.isEmpty()) {
+            throw new NotFoundException("Target account not found");
+        }
+
+        Account account = optionalAccount.get();
+        Account targetAccount = optionalTargetAccount.get();
+
+        if (account.getBalance() < transferRequest.amount()) {
+            throw new BadRequestException("Insufficient balance");
+        }
+
+            account.setBalance(account.getBalance() - transferRequest.amount());
+            targetAccount.setBalance(targetAccount.getBalance() + transferRequest.amount());
+
+        try {
+            accountRepository.save(account);
+            accountRepository.save(targetAccount);
+        } catch (Exception e) {
+            throw new InternalServerException("Failed to transfer");
+        }
+
+        return new AccountResponse(account.getNo(), account.getType(), account.getName(), account.getBalance());
+    }
 }

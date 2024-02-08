@@ -81,5 +81,23 @@ public class AccountController {
     ){
         return accountService.withdrawAccount(accountNo, withdrawRequest);
     }
-}
 
+
+    @Operation(summary = "transfer money from one account to another")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "transfer money from one account to another",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = AccountResponse.class))
+                    })
+    })
+    @RequestMapping(value="/{accountNo}/transfer/{targetAccountNo}", method = RequestMethod.POST)
+    public AccountResponse transferAccount(
+            @PathVariable(name = "accountNo") Integer accountNo,
+            @PathVariable(name = "targetAccountNo") Integer targetAccountNo,
+            @RequestBody @Valid TransferRequest transferRequest
+    ){
+        return accountService.transferAccount(accountNo, targetAccountNo, transferRequest);
+    }
+
+}
