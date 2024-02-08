@@ -100,4 +100,18 @@ public class AccountController {
         return accountService.transferAccount(accountNo, targetAccountNo, transferRequest);
     }
 
+    @Operation(summary = "get specific account")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "get specific account",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = AccountResponse.class))
+                    })
+    })
+    @RequestMapping(value = "/{accountNo}", method = RequestMethod.GET)
+    public AccountResponse getAccount(@PathVariable(name = "accountNo")
+                                          Integer accountNo){
+        return accountService.getAccount(accountNo);
+    }
+
 }

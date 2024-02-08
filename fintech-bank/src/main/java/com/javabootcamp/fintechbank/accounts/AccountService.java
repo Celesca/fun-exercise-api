@@ -4,6 +4,7 @@ import com.javabootcamp.fintechbank.exceptions.BadRequestException;
 import com.javabootcamp.fintechbank.exceptions.InternalServerException;
 import com.javabootcamp.fintechbank.exceptions.NotFoundException;
 import jakarta.transaction.Transactional;
+import org.hibernate.annotations.NotFound;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -127,5 +128,17 @@ public class AccountService {
         }
 
         return new AccountResponse(account.getNo(), account.getType(), account.getName(), account.getBalance());
+    }
+
+    public AccountResponse getAccount(Integer id) {
+        Optional<Account> optionalAccount = accountRepository.findById(id);
+
+        if (optionalAccount.isEmpty()) {
+            throw new NotFoundException("Account not found");
+        }
+
+        Account account = optionalAccount.get();
+        return new AccountResponse(account.getNo(), account.getType(), account.getName(), account.getBalance());
+
     }
 }
